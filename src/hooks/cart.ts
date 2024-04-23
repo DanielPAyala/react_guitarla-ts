@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { db } from '../data/db';
-import type { Guitar } from '../types';
+import type { CartItem, Guitar } from '../types';
 
 export const useCart = () => {
-  const initialCart = (): Guitar[] => {
+  const initialCart = (): CartItem[] => {
     const localStorageCart = localStorage.getItem('cart');
     return localStorageCart ? JSON.parse(localStorageCart) : [];
   };
@@ -23,34 +23,34 @@ export const useCart = () => {
     const itemExists = cart.findIndex((guitar) => guitar.id === item.id);
 
     if (itemExists >= 0) {
-      if (cart[itemExists].quantity! >= MAX_ITEMS) return;
+      if (cart[itemExists].quantity >= MAX_ITEMS) return;
       const updatedCart = [...cart];
-      updatedCart[itemExists].quantity!++;
+      updatedCart[itemExists].quantity++;
       setCart(updatedCart);
     } else {
-      item.quantity = 1;
-      setCart((prevCart) => [...prevCart, item]);
+      const newItem: CartItem = { ...item, quantity: 1 };
+      setCart((prevCart) => [...prevCart, newItem]);
     }
   }
 
-  function removeFromCart(id: number) {
+  function removeFromCart(id: Guitar['id']) {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   }
 
-  function decreaseQuantity(id: number) {
+  function decreaseQuantity(id: Guitar['id']) {
     const updatedCart = cart.map((item) => {
-      if (item.id === id && item.quantity! > MIN_ITEMS) {
-        return { ...item, quantity: item.quantity! - 1 };
+      if (item.id === id && item.quantity > MIN_ITEMS) {
+        return { ...item, quantity: item.quantity - 1 };
       }
       return item;
     });
     setCart(updatedCart);
   }
 
-  function increaseQuantity(id: number) {
+  function increaseQuantity(id: Guitar['id']) {
     const updatedCart = cart.map((item) => {
-      if (item.id === id && item.quantity! < MAX_ITEMS) {
-        return { ...item, quantity: item.quantity! + 1 };
+      if (item.id === id && item.quantity < MAX_ITEMS) {
+        return { ...item, quantity: item.quantity + 1 };
       }
       return item;
     });
@@ -64,7 +64,7 @@ export const useCart = () => {
   // State Derivado
   const isEmpty = useMemo(() => cart.length === 0, [cart]);
   const cartTotal = useMemo(
-    () => cart.reduce((total, item) => total + item.quantity! * item.price, 0),
+    () => cart.reduce((total, item) => total + item.quantity * item.price, 0),
     [cart]
   );
 
