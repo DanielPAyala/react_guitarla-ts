@@ -1,10 +1,10 @@
-import type { Guitar } from '../types';
+import type { CartItem, Guitar } from '../types';
 
 type HeaderProps = {
-  cart: Guitar[];
-  removeFromCart: (id: number) => void;
-  decreaseQuantity: (id: number) => void;
-  increaseQuantity: (id: number) => void;
+  cart: CartItem[];
+  removeFromCart: (id: Guitar['id']) => void;
+  decreaseQuantity: (id: Guitar['id']) => void;
+  increaseQuantity: (id: Guitar['id']) => void;
   clearCart: () => void;
   isEmpty: boolean;
   cartTotal: number;
